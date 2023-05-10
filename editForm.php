@@ -1,3 +1,34 @@
+<?php
+
+// DBへの接続
+include_once('./dbconnect.php');
+
+// function.phpを読み込む
+include_once('./functions.php');
+
+// 選択したIDを取得
+$id = $_GET['id'];
+// echo $id;
+
+// 1.DB接続
+// 2.編集するデータを取得
+//3.取得したデータを表示
+
+// SQL文を作成
+$sql = "SELECT * FROM records WHERE id = :id";
+// SQLの実行準備
+$stmt = $pdo->prepare($sql);
+$stmt->bindParam(':id', $id, PDO::PARAM_INT);
+// SQLの実行
+$stmt->execute();
+
+// データを変数に入れる
+$record = $stmt->fetch();
+
+// var_dump($record);
+
+?>
+
 <!DOCTYPE html>
 <html lang="ja">
 <head>
@@ -21,26 +52,31 @@
     </header>
 
     <form class="m-5" action="./update.php" method="POST">
+      <input type="hidden" name="id" value="<?= $id; ?>">
       <p class="alert alert-success" role="alert">編集フォーム</p>
       <div class="form-group">
         <label for="date">日付</label>
-        <input type="date" class="form-control" id="date" name="date">
+        <input type="date" class="form-control" id="date" name="date" value="<?php echo h($record['date']); ?>">
       </div>
       <div class="form-group">
         <label for="title">タイトル</label>
-        <input type="text" class="form-control" id="title" name="title">
+        <input type="text" class="form-control" id="title" name="title" value="<?php echo h($record['title']); ?>">
       </div>
       <div class="form-group">
         <label for="amount">金額</label>
-        <input type="number" class="form-control" id="amount" name="amount">
+        <input type="number" class="form-control" id="amount" name="amount" value="<?php echo h($record['amount']); ?>">
       </div>
       <div class="form-group">
         <div class="form-check form-check-inline">
-          <input class="form-check-input" type="radio" name="type" id="income">
+          <input class="form-check-input" type="radio" name="type" id="income" value="0"
+          <?= h($record['type']) == 0 ? 'checked' : ''; ?>
+          >
           <label class="form-check-label" for="income">収入</label>
         </div>
         <div class="form-check form-check-inline">
-          <input class="form-check-input" type="radio" name="type" id="spending">
+          <input class="form-check-input" type="radio" name="type" id="spending" value="1"
+          <?= h($record['type']) == 1 ? 'checked' : ''; ?>
+          >
           <label class="form-check-label" for="spending">支出</label>
         </div>
       </div>
